@@ -99,9 +99,9 @@ One of the best reasons why I (Aldrin John Olaer Manalansan) created this tool i
 <b>CHANGELOG</b></div>
 
 v2.9.7
--Improved Material File Extractor.
--Improved Camera Distance Detection.
--Added a Feature at Handy Injection Section >>> Used Items SubSection >>> Options: "Extract Particle Effects?"
+- Improved Material File Extractor.
+- Improved Camera Distance Detection.
+- Added a Feature at Handy Injection Section >>> Used Items SubSection >>> Options: "Extract Particle Effects?"
 	- Using this feature, you can now set wether you want to extract the particle effects of a certain cosmetic item
 	- Example: To disable Rubick's Magus Cyper Arcana's affecting other hero's ability effects, Set "Extract Particle Effects?" = "No".
 
