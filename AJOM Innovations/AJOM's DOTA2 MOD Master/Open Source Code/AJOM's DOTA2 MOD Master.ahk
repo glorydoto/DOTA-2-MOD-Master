@@ -60,7 +60,7 @@ CoordMode,ToolTip,Screen
 ;SetFormat,FloatFast,%A_FormatFloat%
 ;;
 
-version=2.9.7
+version=2.9.8
 
 if disableautoupdate<>1
 	Gosub,versionchecker
@@ -1989,6 +1989,7 @@ for intsaver, in param
 						LV_GetText(numcheck,A_Index,4)
 						LV_GetText(stylechecker,A_Index,5)
 						contentport=%filecontent%
+						EPE := "Yes" ; Force extract particle effects of Global Items
 						gosub,extractmodel
 					}
 					StringReplace,filecontent,filecontent,%replacefrom%,%replaceto%
@@ -2394,6 +2395,13 @@ numcheck
 stylechecker
 */
 extractmodel:
+if (EPE == "No")
+{
+	tmpr := npcherodetector(herousercheck,dota2dir "\game\dota\scripts\npc\npc_heroes.txt")
+	HeroModelPath:=searchstringdetector(tmpr,"""Model""")
+	HeroModelPath:=StrReplace(SubStr(HeroModelPath,1,InStr(HeroModelPath,"/",True,0)-1),"/","\")
+	HeroParticlePath:=StrReplace(searchstringdetector(tmpr,"""particle_folder"""),"/","\")
+}
 npchero:=GlobalArray["npc_heroes.txt"]
 npcunit:=GlobalArray["npc_units.txt"]
 stylestring:=stylechecker
@@ -2453,7 +2461,7 @@ loop,%modelcount%
 			StringGetPos, newpos, subjectcontent,\,R1
 			StringTrimLeft,defaultname,subjectcontent,% newpos+1
 			StringTrimRight,defaultloc,subjectcontent,% modelvarlength-newpos
-			if (defaultloc<>"") and (extractfile<>"")
+			if (defaultloc<>"") and (extractfile<>"") and ((EPE == "Yes") or (defaultloc=HeroModelPath))
 			{
 				tmp="item_rarity"%A_Tab%%A_Tab%"arcana"
 				if (InStr(filecontent,tmp)>0) and (FileExist(A_ScriptDir "\Plugins\VPKCreator\pak01_dir\" defaultloc "\" defaultname))
@@ -2517,8 +2525,7 @@ loop,%modelcount%
 			StringTrimLeft,defaultname,subjectcontent,% newpos+1
 			StringTrimRight,defaultloc,subjectcontent,% modelvarlength-newpos
 		}
-		
-		if (defaultloc<>"") and (extractfile<>"")
+		if (defaultloc<>"") and (extractfile<>"") and ((EPE == "Yes") or (defaultloc=HeroModelPath))
 		{
 			tmp="item_rarity"%A_Tab%%A_Tab%"arcana"
 			if (InStr(filecontent,tmp)>0) and (FileExist(A_ScriptDir "\Plugins\VPKCreator\pak01_dir\" defaultloc "\" defaultname))
@@ -2540,12 +2547,12 @@ loop,%modelcount%
 }
 	;
 	;extract particle effects
-
 modelcount=0
 tmp=`r`n%A_Tab%%A_Tab%%A_Tab%%A_Tab%%A_Tab%"asset"
 tmp:=StrReplace(itemname,tmp,tmp,modelcount)
 loop,%modelcount%
 {
+		; asset modifier detector
 	StringGetPos, ipos1, itemname,`r`n%A_Tab%%A_Tab%%A_Tab%%A_Tab%%A_Tab%"asset",L%A_Index%
 	StringGetPos, ipos2, itemname,`r`n%A_Tab%%A_Tab%%A_Tab%%A_Tab%},,%ipos1%
 	rightpos:=modeltmplength-ipos1
@@ -2555,6 +2562,7 @@ loop,%modelcount%
 	StringGetPos, newpos1, modifierstring,",L3,%newpos%
 	StringGetPos, newpos, modifierstring,",L2,%newpos1%
 	StringMid,check,modifierstring,% newpos1+2, % newpos-newpos1-1
+		;
 	if (SubStr(check,-4,5)=".vpcf") and (((numcheck>0) and (InStr(modifierstring,save)>0)) or (numcheck=0) or ((numcheck>0) and (InStr(modifierstring,save1)<1)))
 	{
 		check=%check%_c
@@ -2588,7 +2596,7 @@ loop,%modelcount%
 				VarSetCapacity(defaultloc,0),VarSetCapacity(extractfile,0)
 			}
 		}
-		if (defaultloc<>"") and (extractfile<>"")
+		if (defaultloc<>"") and (extractfile<>"") and ((EPE == "Yes") or (defaultloc=HeroParticlePath))
 		{
 			tmp="item_rarity"%A_Tab%%A_Tab%"arcana"
 			if ((InStr(filecontent,tmp)>0) and (FileExist(A_ScriptDir "\Plugins\VPKCreator\pak01_dir\" defaultloc "\" defaultname)) and (InStr(rptlimit,herousercheck)>0)) or (rptpermit=1)
@@ -4662,6 +4670,7 @@ Loop % LV_GetCount()
 	filecontent:=itemdetector(tmpstring) ;filecontent:=itemdetector(tmpstring,filestring)
 	LV_GetText(numcheck,A_Index,6)
 	LV_GetText(stylechecker,A_Index,7)
+	LV_GetText(EPE,A_Index,8) ; Extract Particle Effects?
 	contentport=%filecontent%
 	gosub,extractmodel
 	porthero=%herousercheck%
@@ -5647,6 +5656,7 @@ Loop % LV_GetCount()
 		LV_GetText(stylechecker,A_Index,6)
 		itemname:=searchstringdetector(filecontent,"""used_by_heroes""") ; detects the hero who uses the item
 		contentport=%filecontent%
+		EPE := "Yes" ; Force extract particle effects of Global Items
 		gosub,extractmodel
 		porthero=%itemname%
 		if stylechecker>0
@@ -7569,7 +7579,7 @@ This problem is common on "Modding by Scripting Method" but the MOD perfectly wo
 Gui, aboutgui:Tab,3
 Gui,aboutgui:Add,Edit,x0 y20 h400 w500 ReadOnly vtext36,
 (
-v2.9.7
+v2.9.8
 *Improved Material File Extractor.
 *Improved Camera Distance Detection.
 *Added a Feature at Handy Injection Section >>> Used Items SubSection >>> Options: "Extract Particle Effects?"

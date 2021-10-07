@@ -98,7 +98,7 @@ One of the best reasons why I (Aldrin John Olaer Manalansan) created this tool i
 <div align="center">
 <b>CHANGELOG</b></div>
 
-v2.9.7
+v2.9.8
 - Improved Material File Extractor.
 - Improved Camera Distance Detection.
 - Added a Feature at Handy Injection Section >>> Used Items SubSection >>> Options: "Extract Particle Effects?"
